@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Impact Analyzer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 h-screen flex flex-col">
+
+    <nav class="bg-indigo-600 text-white p-4 shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="font-bold text-xl flex items-center gap-2">
+                <i data-lucide="activity"></i> Code Impact AI
+            </div>
+            <div class="space-x-4">
+                <a href="/" class="hover:bg-indigo-700 px-3 py-2 rounded">Dashboard</a>
+                <span class="text-indigo-300">|</span>
+                <span id="ws-status" class="text-xs bg-indigo-800 px-2 py-1 rounded-full animate-pulse">Connecting...</span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow container mx-auto p-6">
+        {% block content %}{% endblock %}
+    </main>
+
+    <div id="loader-overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white p-6 rounded-lg shadow-xl w-96">
+            <div class="flex justify-between mb-2">
+                <h3 class="font-bold text-lg">Pipeline Execution</h3>
+                <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600"></div>
+            </div>
+            <p id="loader-text" class="text-slate-500 text-sm mb-4">Initializing...</p>
+            <div class="w-full bg-gray-200 rounded-full h-2.5">
+                <div id="loader-bar" class="bg-indigo-600 h-2.5 rounded-full transition-all duration-500" style="width: 5%"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+        
+        // WebSocket Connection
+        const ws = new WebSocket("ws://localhost:8090/ws");
+        const statusBadge = document.getElementById('ws-status');
+        const loaderOverlay = document.getElementById('loader-overlay');
+        const loaderText = document.getElementById('loader-text');
+        const loaderBar = document.getElementById('loader-bar');
+
+        ws.onopen = () => {
+            statusBadge.innerText = "Live System Active";
+            statusBadge.classList.remove("animate-pulse", "bg-indigo-800");
+            statusBadge.classList.add("bg-green-500");
+        };
+
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            
+            // Handle Pipeline Progress
+            if (data.status && data.progress) {
+                loaderOverlay.classList.remove('hidden');
+                loaderText.innerText = data.status;
+                
+                // Fake progress bar increment
+                let currentWidth = parseInt(loaderBar.style.width) || 5;
+                loaderBar.style.width = (currentWidth + 20) + "%";
+
+                if(data.status === "Onboarding Complete") {
+                    setTimeout(() => {
+                        loaderOverlay.classList.add('hidden');
+                        window.location.reload();
+                    }, 1000);
+                }
+            }
+
+            // Handle Report Generation
+            if (data.report) {
+                // Dispatch custom event to be caught by repo_detail page
+                const reportEvent = new CustomEvent('reportReceived', { detail: data.report });
+                document.dispatchEvent(reportEvent);
+            }
+        };
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

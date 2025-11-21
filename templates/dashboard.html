@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    
+    <div class="md:col-span-1">
+        <div class="bg-white p-6 rounded-lg shadow border border-slate-200">
+            <h2 class="text-xl font-bold mb-4 text-indigo-600">Onboard Repository</h2>
+            <form id="onboard-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700">Git Repository URL</label>
+                    <input type="url" name="url" required placeholder="https://github.com/..." 
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 border p-2">
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 text-white py-2 px-4 rounded hover:bg-indigo-700 transition">
+                    Start Onboarding
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="md:col-span-2">
+        <h2 class="text-xl font-bold mb-4">Active Repositories</h2>
+        <div class="grid grid-cols-1 gap-4">
+            {% for repo in repos %}
+            <div class="bg-white p-4 rounded-lg shadow border-l-4 border-indigo-500 flex justify-between items-center hover:shadow-md transition">
+                <div>
+                    <h3 class="font-bold text-lg">{{ repo.name }}</h3>
+                    <p class="text-sm text-slate-500">{{ repo.url }}</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">{{ repo.status }}</span>
+                    <a href="/repo/{{ repo.id }}" class="text-indigo-600 hover:text-indigo-800 font-medium text-sm">View Details &rarr;</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% block scripts %}
+<script>
+    document.getElementById('onboard-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        
+        // Trigger Loader immediately
+        document.getElementById('loader-overlay').classList.remove('hidden');
+        document.getElementById('loader-text').innerText = "Initiating Connection...";
+        document.getElementById('loader-bar').style.width = "5%";
+
+        await fetch('/onboard', {
+            method: 'POST',
+            body: formData
+        });
+    });
+</script>
+{% endblock %}
+
+{% endblock %}

@@ -1,0 +1,60 @@
+2025-11-20 21:51:08.223+0000 INFO  Logging config in use: Embedded default config 'default-user-logs.xml'
+2025-11-20 21:51:08.242+0000 INFO  Starting...
+2025-11-20 21:51:09.035+0000 INFO  This instance is ServerId{028cc72d} (028cc72d-3997-4088-b453-99320f044312)
+2025-11-20 21:51:10.171+0000 INFO  ======== Neo4j 2025.10.1 ========
+2025-11-20 21:51:11.860+0000 WARN  [system/00000000] The apoc version (5.26.16) and the Neo4j DBMS versions 2025.10.1 are incompatible. 
+The two first numbers of both versions needs to be the same.
+2025-11-20 21:51:12.729+0000 INFO  Anonymous Usage Data is being sent to Neo4j, see https://neo4j.com/docs/usage-data/
+2025-11-20 21:51:13.594+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2025-11-20 21:51:14.235+0000 INFO  HTTP enabled on 0.0.0.0:7474.
+2025-11-20 21:51:14.235+0000 INFO  Remote interface available at http://localhost:7474/
+2025-11-20 21:51:14.238+0000 INFO  id: 7D46F669709BD6FF8015991A628F013BFCF15799FA7F6E5C7C8F52410786115E
+2025-11-20 21:51:14.238+0000 INFO  name: system
+2025-11-20 21:51:14.238+0000 INFO  creationDate: 2025-11-20T21:51:11.374Z
+2025-11-20 21:51:14.239+0000 INFO  Started.
+2025-11-20 22:36:40.635+0000 INFO  Logging config in use: Embedded default config 'default-user-logs.xml'
+2025-11-20 22:36:40.655+0000 INFO  Starting...
+2025-11-20 22:36:41.550+0000 INFO  This instance is ServerId{028cc72d} (028cc72d-3997-4088-b453-99320f044312)
+2025-11-20 22:36:42.566+0000 INFO  ======== Neo4j 2025.10.1 ========
+2025-11-20 22:36:44.588+0000 WARN  [system/00000000] The apoc version (5.26.16) and the Neo4j DBMS versions 2025.10.1 are incompatible. 
+The two first numbers of both versions needs to be the same.
+2025-11-20 22:36:45.291+0000 INFO  Anonymous Usage Data is being sent to Neo4j, see https://neo4j.com/docs/usage-data/
+2025-11-20 22:36:45.525+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2025-11-20 22:36:46.331+0000 INFO  HTTP enabled on 0.0.0.0:7474.
+2025-11-20 22:36:46.333+0000 INFO  Remote interface available at http://localhost:7474/
+2025-11-20 22:36:46.336+0000 INFO  id: 7D46F669709BD6FF8015991A628F013BFCF15799FA7F6E5C7C8F52410786115E
+2025-11-20 22:36:46.336+0000 INFO  name: system
+2025-11-20 22:36:46.336+0000 INFO  creationDate: 2025-11-20T21:51:11.374Z
+2025-11-20 22:36:46.337+0000 INFO  Started.
+2025-11-20 22:58:31.998+0000 INFO  Logging config in use: Embedded default config 'default-user-logs.xml'
+2025-11-20 22:58:32.015+0000 INFO  Starting...
+2025-11-20 22:58:32.847+0000 INFO  This instance is ServerId{028cc72d} (028cc72d-3997-4088-b453-99320f044312)
+2025-11-20 22:58:33.787+0000 INFO  ======== Neo4j 2025.10.1 ========
+2025-11-20 22:58:35.218+0000 WARN  [system/00000000] The apoc version (5.26.16) and the Neo4j DBMS versions 2025.10.1 are incompatible. 
+The two first numbers of both versions needs to be the same.
+2025-11-20 22:58:35.753+0000 INFO  Anonymous Usage Data is being sent to Neo4j, see https://neo4j.com/docs/usage-data/
+2025-11-20 22:58:35.925+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2025-11-20 22:58:36.483+0000 INFO  HTTP enabled on 0.0.0.0:7474.
+2025-11-20 22:58:36.484+0000 INFO  Remote interface available at http://localhost:7474/
+2025-11-20 22:58:36.487+0000 INFO  id: 7D46F669709BD6FF8015991A628F013BFCF15799FA7F6E5C7C8F52410786115E
+2025-11-20 22:58:36.487+0000 INFO  name: system
+2025-11-20 22:58:36.487+0000 INFO  creationDate: 2025-11-20T21:51:11.374Z
+2025-11-20 22:58:36.487+0000 INFO  Started.
+2025-11-20 23:00:27.494+0000 INFO  Neo4j Server shutdown initiated by request
+2025-11-20 23:00:27.495+0000 INFO  Stopping...
+2025-11-20 23:00:38.775+0000 INFO  Logging config in use: Embedded default config 'default-user-logs.xml'
+2025-11-20 23:00:38.796+0000 INFO  Starting...
+2025-11-20 23:00:39.656+0000 INFO  This instance is ServerId{028cc72d} (028cc72d-3997-4088-b453-99320f044312)
+2025-11-20 23:00:40.631+0000 INFO  ======== Neo4j 2025.10.1 ========
+2025-11-20 23:00:41.997+0000 WARN  [system/00000000] The apoc version (5.26.16) and the Neo4j DBMS versions 2025.10.1 are incompatible. 
+The two first numbers of both versions needs to be the same.
+2025-11-20 23:00:42.615+0000 INFO  Anonymous Usage Data is being sent to Neo4j, see https://neo4j.com/docs/usage-data/
+2025-11-20 23:00:42.837+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2025-11-20 23:00:43.556+0000 INFO  HTTP enabled on 0.0.0.0:7474.
+2025-11-20 23:00:43.557+0000 INFO  Remote interface available at http://localhost:7474/
+2025-11-20 23:00:43.559+0000 INFO  id: 7D46F669709BD6FF8015991A628F013BFCF15799FA7F6E5C7C8F52410786115E
+2025-11-20 23:00:43.559+0000 INFO  name: system
+2025-11-20 23:00:43.559+0000 INFO  creationDate: 2025-11-20T21:51:11.374Z
+2025-11-20 23:00:43.559+0000 INFO  Started.
+2025-11-20 23:01:35.492+0000 INFO  Neo4j Server shutdown initiated by request
+2025-11-20 23:01:35.492+0000 INFO  Stopping...

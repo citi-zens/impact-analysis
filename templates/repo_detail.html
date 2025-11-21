@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="mb-6 flex items-center gap-2">
+    <a href="/" class="text-slate-500 hover:text-slate-800"><i data-lucide="arrow-left"></i> Back</a>
+    <h1 class="text-2xl font-bold text-slate-800">Repository: {{ repo.name }}</h1>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    
+    <div class="space-y-6">
+        
+        <div class="bg-white rounded-lg shadow p-6 border border-slate-200">
+            <div class="flex items-center gap-2 mb-4 border-b pb-2">
+                <i data-lucide="file-text" class="text-indigo-500"></i>
+                <h2 class="font-bold text-lg">Functional Requirements</h2>
+            </div>
+            <textarea id="fr-input" rows="4" class="w-full border p-2 rounded text-sm mb-3" placeholder="Describe the new feature requirements here..."></textarea>
+            <button onclick="triggerAnalysis('FR')" class="bg-indigo-600 text-white px-4 py-2 rounded text-sm hover:bg-indigo-700 w-full">
+                Analyze FR Impact
+            </button>
+        </div>
+
+        <div class="bg-white rounded-lg shadow p-6 border border-slate-200">
+            <div class="flex items-center gap-2 mb-4 border-b pb-2">
+                <i data-lucide="git-pull-request" class="text-indigo-500"></i>
+                <h2 class="font-bold text-lg">Open Pull Requests</h2>
+            </div>
+            <ul class="space-y-3">
+                <li class="flex justify-between items-center p-3 bg-slate-50 rounded border hover:border-indigo-300 cursor-pointer group">
+                    <div>
+                        <div class="font-semibold text-sm">#42 Update Authentication Logic</div>
+                        <div class="text-xs text-slate-500">Opened by @dev_user</div>
+                    </div>
+                    <button onclick="triggerAnalysis('PR', '42')" class="opacity-0 group-hover:opacity-100 text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded">
+                        Analyze
+                    </button>
+                </li>
+                <li class="flex justify-between items-center p-3 bg-slate-50 rounded border hover:border-indigo-300 cursor-pointer group">
+                    <div>
+                        <div class="font-semibold text-sm">#43 Fix Billing API latency</div>
+                        <div class="text-xs text-slate-500">Opened by @senior_dev</div>
+                    </div>
+                    <button onclick="triggerAnalysis('PR', '43')" class="opacity-0 group-hover:opacity-100 text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded">
+                        Analyze
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="bg-slate-900 text-white rounded-lg shadow-xl p-6 relative overflow-hidden min-h-[400px]">
+        <div class="absolute top-0 right-0 p-4 opacity-10">
+            <i data-lucide="activity" width="100" height="100"></i>
+        </div>
+        
+        <h2 class="text-xl font-bold mb-6 border-b border-slate-700 pb-2">Impact Analysis Report</h2>
+        
+        <div id="report-placeholder" class="flex flex-col items-center justify-center h-64 text-slate-500">
+            <i data-lucide="bar-chart-2" class="mb-2" width="40" height="40"></i>
+            <p>Select an FR or PR to generate analysis</p>
+        </div>
+
+        <div id="report-content" class="hidden space-y-4 animate-fade-in">
+            <div class="flex justify-between items-center bg-slate-800 p-3 rounded">
+                <span class="text-slate-400 text-sm">Risk Level</span>
+                <span id="rep-risk" class="font-bold text-red-400 text-lg">HIGH</span>
+            </div>
+            
+            <div>
+                <h4 class="text-sm font-semibold text-slate-400 mb-2">Affected Files</h4>
+                <div id="rep-files" class="bg-slate-800 p-3 rounded font-mono text-xs text-green-400 space-y-1">
+                    </div>
+            </div>
+
+            <div>
+                <h4 class="text-sm font-semibold text-slate-400 mb-2">Service Impact</h4>
+                <div id="rep-services" class="flex gap-2 flex-wrap">
+                    </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    async function triggerAnalysis(type, pr_id) {
+        const payload = {
+            type: type
+        };
+
+        if (type === 'FR') {
+            const fr_data = document.getElementById('fr-input').value;
+            if (!fr_data.trim()) {
+                alert("Please enter Functional Requirements before analyzing.");
+                return;
+            }
+            // Add FR data to the payload
+            payload.fr_data = fr_data;
+            document.getElementById('loader-text').innerText = "Running Deep Analysis on Functional Requirements";
+        } else if (type === 'PR') {
+            // Add PR ID to the payload
+            payload.pr_id = pr_id;
+            document.getElementById('loader-text').innerText = `Running Deep Analysis on PR #${pr_id}`;
+        } else {
+            return;
+        }
+
+        // Show loader
+        document.getElementById('loader-overlay').classList.remove('hidden');
+        
+        // Send the request as JSON
+        await fetch('/analyze/{{ repo.id }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload) // Send payload as JSON
+        })
+        .then(response => {
+            if (!response.ok) {
+                // Handle non-2xx responses
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            // Since you are using WebSockets, the response body might be empty or just a confirmation.
+            // No need to parse JSON here unless the backend immediately returns the report.
+        })
+        .catch(error => {
+            console.error('Analysis request failed:', error);
+            // Hide loader and show an error message
+            document.getElementById('loader-overlay').classList.add('hidden');
+            alert('Analysis failed. Check console for details.');
+        });
+    }
+
+    // Listen for the WebSocket event dispatched from base.html
+    document.addEventListener('reportReceived', (e) => {
+        const report = e.detail;
+        console.log("Received report via WebSocket:", report);
+        
+        // Hide loader
+        document.getElementById('loader-overlay').classList.add('hidden');
+
+        // Show Report
+        document.getElementById('report-placeholder').classList.add('hidden');
+        const contentDiv = document.getElementById('report-content');
+        contentDiv.classList.remove('hidden');
+
+        // Populate Data
+        document.getElementById('rep-risk').innerText = report.risk_level;
+        
+        const filesDiv = document.getElementById('rep-files');
+        filesDiv.innerHTML = report.files_changed.map(f => `<div>> ${f}</div>`).join('');
+
+        const servicesDiv = document.getElementById('rep-services');
+        servicesDiv.innerHTML = report.affected_services.map(s => 
+            `<span class="px-2 py-1 bg-indigo-600 rounded text-xs">${s}</span>`
+        ).join('');
+    });
+</script>
+{% endblock %}
