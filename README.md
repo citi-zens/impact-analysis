@@ -26,7 +26,7 @@ based RAG workflow.
 [Demo Video](https://drive.google.com/file/d/1eIXG9_lypGusqArNAVVO18ibotoO06nb/view?usp=sharing)
 
 ## Architecture Diagram
-
+![Architecture Diagram](architecture.png)
 
 ## Tech Stack
 
