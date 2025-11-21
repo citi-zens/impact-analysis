@@ -23,6 +23,8 @@ affected components and risk areas.
 The solution uses MCP for secure model interaction and an internal code
 based RAG workflow.
 
+[Demo Video](https://drive.google.com/file/d/1eIXG9_lypGusqArNAVVO18ibotoO06nb/view?usp=sharing)
+
 ## Tech Stack
 
 -   LLM: llama 3.1 8b
