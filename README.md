@@ -47,7 +47,11 @@ based RAG workflow.
 
 ## Running the Platform
 
-To start the application:
+To start the application first time:
+
+  startup.sh
+
+To start the application after first run:
 
     docker compose up -d --build
 
