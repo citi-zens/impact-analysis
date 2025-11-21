@@ -6,6 +6,15 @@
     <title>Impact Analyzer</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Highlight.js (code highlighting) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+
+    <!-- marked (markdown parser) -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <!-- DOMPurify (sanitizer) -->
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@2.4.0/dist/purify.min.js"></script>
 </head>
 <body class="bg-slate-50 text-slate-800 h-screen flex flex-col">
 
@@ -73,6 +82,11 @@
                         window.location.reload();
                     }, 1000);
                 }
+                
+            }
+            if(data.type === "readme") {
+                console.log("ureka");
+                document.getElementById("reportp").value=renderMarkdown(data.report);
             }
 
             // Handle Report Generation
@@ -82,6 +96,41 @@
                 document.dispatchEvent(reportEvent);
             }
         };
+
+            // sanitize-and-render helper
+        function renderMarkdown(md) {
+            if (!md) {
+                mdContent.innerHTML = '<p class="small-muted">Empty markdown.</p>';
+                return;
+            }
+            // Convert markdown -> HTML
+            let rawHtml;
+            try {
+                rawHtml = marked.parse(md);
+            } catch (e) {
+                mdContent.innerHTML = '<pre>Error parsing markdown: ' + String(e) + '</pre>';
+                return;
+            }
+            // Sanitize
+            const clean = DOMPurify.sanitize(rawHtml, {USE_PROFILES: {html: true}});
+            mdContent.innerHTML = clean;
+            // Apply highlight to any code blocks that were not auto-highlighted
+            document.querySelectorAll('pre code').forEach((block) => {
+                try { hljs.highlightElement(block); } catch (e){}
+            });
+        }
+
+        let debounceTimer = null;
+        mdInput.addEventListener('input', () => {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+            if (mdInput.value.trim()) {
+            renderMarkdown(mdInput.value);
+            status.textContent = 'Rendered pasted Markdown (live).';
+            }
+        }, 350);
+        });
+
     </script>
     {% block scripts %}{% endblock %}
 </body>

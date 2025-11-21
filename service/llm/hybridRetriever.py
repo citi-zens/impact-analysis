@@ -40,62 +40,111 @@ rag = GraphRAG(retriever=retriever, llm=llm)
 def get_query_prompt(prompt_type='embed',data:str='',is_fr:bool=True) -> str:
     if prompt_type=='embed':
         query_text = f'''
-        You are an impact-analysis engine.
+        You are an expert software-impact analyzer. 
+        You have access to the entire AST of the codebase stored in Neo4j, 
+        which will be retrieved through a hybrid retriever (vector + keyword). 
 
-        I will provide you with:
-        - A list of AST nodes
-        - Their semantic types (function, class, call, assignment, variable_declaration, identifier_use)
-        - Child edges (AST structure)
-        - CALL edges (caller → callee)
-        - DEF/USE edges (for data-flow)
-        - File/Module paths for each node
+        Your task
+        Given the following input data, which may be a Feature Request (FR) or Pull Request (PR),
+        identify ALL modules, services, files, classes, functions, and dependency chains 
+        that are likely to be impacted — directly, indirectly, or through semantic coupling.
 
-        Your task:
-        1. Identify which modules (files or logical components) are MOST impacted by a change.
-        2. Impact means:
-        - A function calls another function in a different file → propagate impact.
-        - A function or class is referenced by another module → impacted.
-        - A variable or symbol is defined in one module and used in another → impacted.
-        - Parent modules of impacted nodes also receive accumulated impact.
+        Use the complete impact taxonomy below to reason
+        - Direct Code Impacts
+        - Dependency & Integration Impacts
+        - Behavioral & Logical Impacts
+        - Data & Persistence Impacts
+        - Interface & Contract Impacts
+        - Non-Functional Impacts
+        - Testing & Quality Impacts
+        - Infrastructure & Deployment Impacts
+        - Hidden Semantic Impacts
+        - Human & Process Impacts
 
-        3. Compute a ranked list where:
-        - Higher impact = more references, more calls, more data-flow dependencies.
-        - Count both direct and transitive impacts.
-        - Group impacts by `repo` and `file`.
+        Output Format (STRICT)
+        
+        primary_entities - [ ... ],     // directly mentioned or modified items
+        structural_impacts - [ ... ],   // imports, inheritance, module-level links
+        dependency_impacts - [ ... ],   // upstream/downstream microservices, events, DB
+        behavioral_impacts - [ ... ],   // logic, state, business rules
+        interface_impacts -[ ... ],    // API, message, schema drifts
+        hidden_impacts - [ ... ],       // reflection, feature flags, AOP, runtime coupling
+        test_impacts - [ ... ],         // unit/integration fixtures or unused paths
+        infra_impacts - [ ... ],        // CI/CD, env vars, config drift
+        output_references - [ ... ]     // ONLY Neo4j node labels/keys to query later
+        
 
-        4. Output:
-        - A sorted list of modules with:
-                module file_path,
-                direct_impacts number,
-                transitive_impacts number,
-                reasons explanations
-            
+        Where
+        - Each list must contain references in the format understood by the graph 
+        (e.g. ModuleName, ClassName, FunctionName, FilePath, ServiceName)
+        - Do NOT write any Cypher queries here.
+        - Do NOT summarize the PR/FR.
+        - Only extract IMPACTS and affected graph entities.
 
-        5. Rules:
-        - Treat function and class definitions as the strongest semantic anchors.
-        - Treat calls and assignments as primary impact propagation signals.
-        - Ignore literal and identifier-only nodes unless they create cross-file references.
-        - Propagate impacts along:
-                CALLS edges
-                DEF → USE edges
-                parent-child AST ancestors (but lower weight)
-        - Count only meaningful semantic edges.
+        Now analyze the following input
 
-        Now I will give you the AST nodes and relationships.  
-        Analyze them and return the top-impacted modules.
+
         "{data}"
         '''
     else:
         query_text = f'''
-        Given the following AST nodes and their relationships in neo4j, analyze the impact of changes related".
+        You are an expert Neo4j Cypher generation agent.
 
-        Use semantic edges like CALLS, DEF/USE, and AST structure to propagate impact.
+        You receive JSON input in the exact structure:
+        
+        "primary_entities": [...],
+        "structural_impacts": [...],
+        "dependency_impacts": [...],
+        "behavioral_impacts": [...],
+        "interface_impacts": [...],
+        "hidden_impacts": [...],
+        "test_impacts": [...],
+        "infra_impacts": [...],
+        "output_references": [...]
+        
 
-        Return a ranked list of modules with direct and transitive impact counts and brief reasons for each.
+        Your job:
+        Generate Cypher queries that will:
+        1. Fetch all AST nodes associated with these entities
+        2. Traverse imports, calls, inheritance, and dependency edges
+        3. Identify transitive impacts (depth 1–5)
+        4. Detect upstream/downstream modules
+        5. Identify event/message/API consumers
+        6. Resolve hidden/semantic couplings
+        7. Collect all affected nodes, files, modules, and services
 
-        Feature/Reasoning: here's the data"{data}"
+        RULES:
+        - For every entity, produce at least one Cypher MATCH query.
+        - Use labels like :Module, :Class, :Function, :File, :Service, :Event, :Api, :Config 
+        only if they exist in the graph (infer from names).
+        - Use parameterized Cypher where possible.
+        - Combine related queries using CALL  to avoid duplication.
+        - ALWAYS return:
+        moduleName, filePath, className, functionName, serviceName, reasonForImpact
+        - Do NOT produce explanations or English text. 
+        - Output only Cypher queries or CALL blocks.
+
+        Input to analyze:
+        {data}
+
         '''
-    return query_text
+    import re
+
+    def sanitize_query(q: str) -> str:
+        if not q or not isinstance(q, str):
+            return ""
+
+        # Remove Lucene special characters
+        cleaned = re.sub(r'[+\-\!\(\)\{\}\[\]\^"~\*\?:\\\/]', ' ', q)
+
+        # Collapse multiple spaces
+        cleaned = re.sub(r'\s+', ' ', cleaned)
+
+        return cleaned.strip()
+
+    
+    return sanitize_query(query_text)
+
 
 def run_mcphost(embeddings_output):
     command = [
@@ -118,9 +167,10 @@ def run_mcphost(embeddings_output):
 
     return result.stdout
 
-
-def analyze_impact(is_fr:bool=True,data: str='',top_k:int=20):
-    # response = rag.search(query_text=get_query_prompt(data=data,is_fr=is_fr), retriever_config={"top_k": top_k})
-    # print(response.answer)
-    resp = run_mcphost(get_query_prompt(prompt_type='test',data=data,is_fr=is_fr))
+def analyze_impact(is_fr:bool=True,data: str='',top_k:int=300):
+    response = rag.search(query_text=get_query_prompt(data=data,is_fr=is_fr), retriever_config={"top_k": top_k})
+    print(response.answer)
+    resp = run_mcphost(get_query_prompt(prompt_type='test',data=response.answer,is_fr=is_fr))
+    
     return resp
+

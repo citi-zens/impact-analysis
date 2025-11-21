@@ -81,7 +81,7 @@ async def simulate_impact_analysis(repo_id: int, type_param: str,data: str):
     #     "affected_services": ["UserAuth", "Billing"],
     #     "status": "Report Ready"
     # }
-    await manager.broadcast(json.dumps({"repo_id": repo_id, "report": result}))
+    await manager.broadcast(json.dumps({"repo_id": repo_id, "report": result, "type":"readme"}))
     print("Impact analysis completed for repo:", repo_id,result)
 
 # --- Routes ---

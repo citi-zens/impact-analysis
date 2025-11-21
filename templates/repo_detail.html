@@ -56,28 +56,8 @@
         
         <h2 class="text-xl font-bold mb-6 border-b border-slate-700 pb-2">Impact Analysis Report</h2>
         
-        <div id="report-placeholder" class="flex flex-col items-center justify-center h-64 text-slate-500">
-            <i data-lucide="bar-chart-2" class="mb-2" width="40" height="40"></i>
-            <p>Select an FR or PR to generate analysis</p>
-        </div>
-
-        <div id="report-content" class="hidden space-y-4 animate-fade-in">
-            <div class="flex justify-between items-center bg-slate-800 p-3 rounded">
-                <span class="text-slate-400 text-sm">Risk Level</span>
-                <span id="rep-risk" class="font-bold text-red-400 text-lg">HIGH</span>
-            </div>
-            
-            <div>
-                <h4 class="text-sm font-semibold text-slate-400 mb-2">Affected Files</h4>
-                <div id="rep-files" class="bg-slate-800 p-3 rounded font-mono text-xs text-green-400 space-y-1">
-                    </div>
-            </div>
-
-            <div>
-                <h4 class="text-sm font-semibold text-slate-400 mb-2">Service Impact</h4>
-                <div id="rep-services" class="flex gap-2 flex-wrap">
-                    </div>
-            </div>
+        <div class="md-content" id="mdContent" style="overflow-y: auto; height: 60vh;" >
+          <p  id="reportp" ></p>
         </div>
     </div>
 </div>
@@ -156,5 +136,21 @@
             `<span class="px-2 py-1 bg-indigo-600 rounded text-xs">${s}</span>`
         ).join('');
     });
+
+    
+
 </script>
+<style>/* Markdown content styling */
+    .md-content{color:var(--text); line-height:1.6; max-width:900px;}
+    .md-content h1{font-size:26px; margin:0 0 12px;}
+    .md-content h2{font-size:20px; margin:18px 0 8px;}
+    .md-content pre{background:#021026; padding:12px; border-radius:8px; overflow:auto;}
+    .md-content code{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace; font-size:13px;}
+    .controls{display:flex; gap:8px; align-items:center; margin-top:10px; flex-wrap:wrap;}
+    .small-muted{font-size:12px; color:var(--muted);}
+    .status{font-size:13px; color:var(--muted); margin-top:10px;}
+    @media (max-width:900px){
+      .container{grid-template-columns: 1fr; padding-bottom:40px;}
+      .panel{margin-bottom:14px;}
+    }</style>
 {% endblock %}
