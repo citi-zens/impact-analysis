@@ -14,12 +14,13 @@ def run(query, params=None):
         session.run(query, params or {})
 
 def create_vector_indexes():
+    run("DROP INDEX astVectorIndex IF EXISTS;")
     run("""
         CREATE VECTOR INDEX astVectorIndex IF NOT EXISTS
         FOR (n:AstNode) ON (n.embedding)
         OPTIONS {
         indexConfig: {
-            `vector.dimensions`: 2048,
+            `vector.dimensions`: 768,
             `vector.similarity_function`: "cosine"
         }
         };

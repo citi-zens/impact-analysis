@@ -9,11 +9,11 @@ from neo4j_graphrag.embeddings import OllamaEmbeddings
 # -----------------------------
 # EMBEDDING MODEL
 # -----------------------------
-embedder = OllamaEmbeddings(model="sellerscrisp/jina-embeddings-v4-text-code-q4")
+embedder = OllamaEmbeddings(model="nomic-embed-text")
 
 def embed(text: str) -> List[float]:
     if not text:
-        return [0.0] * 2048
+        return [0.0] * 768
     embedding = embedder.embed_query(text)
     return embedding
 

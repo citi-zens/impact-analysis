@@ -19,7 +19,8 @@ print("Connecting to Neo4j at:", NEO4J_URI,NEO4J_PASSWORD,NEO4J_USERNAME)
 driver = GraphDatabase.driver(NEO4J_URI, auth=(NEO4J_USERNAME, NEO4J_PASSWORD))
 
 embedder = OllamaEmbeddings(
-    model="sellerscrisp/jina-embeddings-v4-text-code-q4"
+    # model="sellerscrisp/jina-embeddings-v4-text-code-q4"
+    model="nomic-embed-text"
 )
 
 retriever = HybridRetriever(
@@ -31,7 +32,7 @@ retriever = HybridRetriever(
 )
 # LLM
 llm = OllamaLLM(
-    model_name="qwen2.5:1.5b",
+    model_name="llama3.1:8b",
 )
 # Initialize the RAG pipeline
 rag = GraphRAG(retriever=retriever, llm=llm)
@@ -99,8 +100,8 @@ def get_query_prompt(prompt_type='embed',data:str='',is_fr:bool=True) -> str:
 def run_mcphost(embeddings_output):
     command = [
         os.path.expanduser("~/go/bin/mcphost"),
-        "-m", "ollama:qwen2.5:1.5b",
-        "--config", os.path.expanduser("~/local.json"),
+        "-m", "ollama:llama3.1:8b",
+        "--config", os.path.expanduser("./local.json"),
         "-p", f"analyse impact from neo4j ASTnode based on the based on the modules listed and provide a readme.md as output {embeddings_output}",
         "--quiet"
     ]
@@ -119,7 +120,7 @@ def run_mcphost(embeddings_output):
 
 
 def analyze_impact(is_fr:bool=True,data: str='',top_k:int=20):
-    response = rag.search(query_text=get_query_prompt(data=data,is_fr=is_fr), retriever_config={"top_k": top_k})
-    print(response.answer)
-    resp = run_mcphost(get_query_prompt(prompt_type='test',data=response.answer,is_fr=is_fr))
+    # response = rag.search(query_text=get_query_prompt(data=data,is_fr=is_fr), retriever_config={"top_k": top_k})
+    # print(response.answer)
+    resp = run_mcphost(get_query_prompt(prompt_type='test',data=data,is_fr=is_fr))
     return resp

@@ -1,3 +1,7 @@
 impact.db
 .env
 repos/
+__pycache__/
+impact-venv/
+neo4j/logs/
+neo4j/data/
